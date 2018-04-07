@@ -137,3 +137,83 @@ class Robots extends Model
 使用`getters`和`setters`时，属性名中的下划线可能会导致问题。
 
 如果你在属性名中使用下划线，在声明`getters`和`setters`魔术方法时，仍然要使用驼峰格式(`$model->getPropertyName()`代替`$model->getProperty_name()`，`$model->findByPropertyName()`代替`$model->findByProperty_name()`等)。大多数系统推荐驼峰写法，而不是下划线写法，所以建议你按照文档中的写法来命名属性。你可以使用字段映射(如上所述)以确保属性正确映射到数据表中对应字段。
+
+## 理解记录对象(Understanding Records To Objects)
+模型的每一个实例代表数据表中的一条记录，你可以通过读取模型对象属性来访问记录数据。例如，表`robots`有如下记录：
+```sql
+mysql> select * from robots;
++----+------------+------------+------+
+| id | name       | type       | year |
++----+------------+------------+------+
+|  1 | Robotina   | mechanical | 1972 |
+|  2 | Astro Boy  | mechanical | 1952 |
+|  3 | Terminator | cyborg     | 2029 |
++----+------------+------------+------+
+3 rows in set (0.00 sec)
+```
+你可以通过主键查找某条记录：
+```php
+<?php
+
+use Store\Toys\Robots;
+
+// 查找id = 3的记录
+$robot = Robots::findFirst(3);
+
+// 输出'Terminator'
+echo $robot->name;
+```
+一旦记录存储在内存中，你可以修改其中的数据并保存：
+```php
+<?php
+
+use Store\Toys\Robots;
+
+$robot = Robots::findFirst(3);
+
+$robot->name = 'RoboCop';
+
+$robot->save();
+```
+如你所见，`Phalcon\Mvc\Model`为web应用提供了数据库高级抽象层，不需要使用原生SQL语句。
+## 查找记录(Finding Records)
+`Phalcon\Mvc\Model`提供了多种查询记录的方法，下面例子演示如何用模型查找一条或多条记录：
+```php
+<?php
+
+use Store\Toys\Robots;
+
+// 查询所有记录
+$robots = Robots::find();
+echo 'There are ', count($robots), "\n";
+
+// 查询type = 'mechanical'的记录
+$robots = Robots::find("type = 'mechanical'");
+echo 'There are ', count($robots), "\n";
+
+// 获取type = 'virtual'的记录，根据name排序
+$robots = Robots::find(
+    [
+        "type = 'virtual'",
+        'order' => 'name',
+    ]
+);
+foreach ($robots as $robot) {
+    echo $robot->name, "\n";
+}
+
+// 获取type = 'virtual'的前100条记录，根据name排序
+$robots = Robots::find(
+    [
+        "type = 'virtual'",
+        'order' => 'name',
+        'limit' => 100,
+    ]
+);
+foreach ($robots as $robot) {
+    echo $robot->name, "\n";
+}
+```
+如果你想通过外部数据(如用户输入)或变量查找记录，必须使用数据绑定。
+
+你可以使用`findFirst()`方法，获取满足给定条件的第一条记录：
