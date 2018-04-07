@@ -5,7 +5,7 @@ Phalcon应用中，`Phalcon\Mvc\Model`是所有模型的基类。它提供了数
 
 `Phalcon\Mvc\Model`将方法动态的转换为对应的数据库操作，规避了使用SQL语句的必要。
 
-模型使用数据库高级抽象层，如果你需要使用更为底层的方式操作数据库，请参考`Phalcon\Db`组件文档。
+模型使用数据库高级抽象层，如果你想要使用更为底层的方式操作数据库，请参考`Phalcon\Db`组件文档。
 ## 创建模型(Creating Models)
 模型继承`Phalcon\Mvc\Model`类，以大驼峰格式命名。
 ```php
