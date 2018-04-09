@@ -279,3 +279,306 @@ $robot = Robots::findFirst(
     ]
 );
 ```
+`get`前缀用来`find()` / `findFirst()`关联记录，根据关系类型调用`find()`或`findFirst()`方法：
+
+<table>
+    <thead>
+        <tr>
+            <th>关系类型</th>
+            <th>说明</th>
+            <th>隐式方法</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>多对一</td>
+            <td>直接返回关联模型实例</td>
+            <td>findFirst</td>
+        </tr>
+        <tr>
+            <td>一对一</td>
+            <td>直接返回关联模型实例</td>
+            <td>findFirst</td>
+        </tr>
+        <tr>
+            <td>一对多</td>
+            <td>返回关联模型实例的集合</td>
+            <td>find</td>
+        </tr>
+        <tr>
+            <td>多对多</td>
+            <td>返回关联模型实例的集合，隐式的与关联模型进行内连接</td>
+            <td>(complex query)</td>
+        </tr>
+    </tbody>
+</table>
+
+可以使用`count`前缀返回表示关联模型计数的整数：
+```php
+<?php
+
+use Store\Toys\Robots;
+
+$robot = Robots::findFirst(2);
+
+echo 'The robot has ', $robot->countRobotsParts(), " parts\n";
+```
+### 关系别名(Aliasing Relationships)
+为了更好的说明别名是如何运作，先看下面的例子：
+
+`robots_similar`表定义了哪些robots与其他robots相似：
+```sql
+mysql> desc robots_similar;
++-------------------+------------------+------+-----+---------+----------------+
+| Field             | Type             | Null | Key | Default | Extra          |
++-------------------+------------------+------+-----+---------+----------------+
+| id                | int(10) unsigned | NO   | PRI | NULL    | auto_increment |
+| robots_id         | int(10) unsigned | NO   | MUL | NULL    |                |
+| similar_robots_id | int(10) unsigned | NO   |     | NULL    |                |
++-------------------+------------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+```
+`robots_id`和`similar_robots_id`字段均关联模型Robots：
+
+映射此表及其关联表的模型如下：
+```php
+<?php
+
+class RobotsSimilar extends Phalcon\Mvc\Model
+{
+    public function initialize()
+    {
+        $this->belongsTo(
+            'robots_id',
+            'Store\Toys\Robots',
+            'id'
+        );
+
+        $this->belongsTo(
+            'similar_robots_id',
+            'Store\Toys\Robots',
+            'id'
+        );
+    }
+}
+```
+由于两个关系都指向同一模型(Robots)，获取关联模型记录可能会不清晰：
+```php
+<?php
+
+$robotsSimilar = RobotsSimilar::findFirst();
+
+// 基于关联字段(robots_id)返回关联模型记录
+// 由于是多对一关系，因此只返回一条记录
+// 但是方法名'getRobots'似乎暗示返回记录不只一条
+
+$robot = $robotsSimilar->getRobots();
+
+// 如果关系指向指向同一字段，如何根据关联字段(similar_robots_id)获取关联记录
+```
+别名允许我们重命名这两个关系，以解决上述问题：
+```php
+<?php
+
+use Phalcon\Mvc\Model;
+
+class RobotsSimilar extends Model
+{
+    public function initialize()
+    {
+        $this->belongsTo(
+            'robots_id',
+            'Store\Toys\Robots',
+            'id',
+            [
+                'alias' => 'Robot',
+            ]
+        );
+
+        $this->belongsTo(
+            'similar_robots_id',
+            'Store\Toys\Robots',
+            'id',
+            [
+                'alias' => 'SimilarRobot',
+            ]
+        );
+    }
+}
+```
+借助别名，可以轻松获取关联记录。还可以调用`getRelated()`方法，使用别名访问关联记录：
+```php
+<?php
+
+$robotsSimilar = RobotsSimilar::findFirst();
+
+// 根据关联字段(robots_id)返回关联记录
+$robot = $robotsSimilar->getRobot();
+$robot = $robotsSimilar->robot;
+$robot = $robotsSimilar->getRelated('Robot');
+
+// 根据关联字段(similar_robots_id)返回关联记录
+$similarRobot = $robotsSimilar->getSimilarRobot();
+$similarRobot = $robotsSimilar->similarRobot;
+$similarRobot = $robotsSimilar->getRelated('SimilarRobot');
+```
+#### 魔术方法`Getters`和显式方法(Magic Getters vs. Explicit methods)
+大多数带自动完成功能的IDEs和编辑器在使用魔术方法`getters`(包括方法和属性)时，无法准确区分方法和属性。为了解决这个问题，可以使用docblock类来指定可用的魔术行为，帮助IDE更好的实现自动完成功能：
+```php
+<?php
+
+namespace Store\Toys;
+
+use Phalcon\Mvc\Model;
+
+/**
+ * 表robots模型类
+ * @property Simple|RobotsParts[] $robotsParts
+ * @method   Simple|RobotsParts[] getRobotsParts($parameter = null)
+ * @method   integer              countRobotsParts()
+ */
+class Robots extends Model
+{
+    public $id;
+
+    public $name;
+
+    public function initialize()
+    {
+        $this->hasMany(
+            'id',
+            'RobotsParts',
+            'robots_id'
+        );
+    }
+}
+```
+## 条件语句(Conditionals)
+你可以根据条件语句创建关系。根据关系执行查询时，条件将自动添加到查询当中：
+```php
+<?php
+
+use Phalcon\Mvc\Model;
+
+// Companies have invoices issued to them (paid / unpaid)
+// 模型Invoices
+class Invoices extends Model
+{
+
+}
+
+// 模型Companies
+class Companies extends Model
+{
+    public function initialize()
+    {
+        // invoices所有关系
+        $this->hasMany(
+            'id',
+            'Invoices',
+            'inv_id',
+            [
+                'alias' => 'Invoices',
+            ]
+        );
+
+        // Paid invoices关系
+        $this->hasMany(
+            'id',
+            'Invoices',
+            'inv_id',
+            [
+                'alias'  => 'InvoicesPaid',
+                'params' => [
+                    'conditions' => 'inv_status = "paid"',
+                ],
+            ]
+        );
+
+        // Unpaid invoices关系 + 参数绑定
+        $this->hasMany(
+            'id',
+            'Invoices',
+            'inv_id',
+            [
+                'alias'  => 'InvoicesUnpaid',
+                'params' => [
+                    'conditions' => 'inv_status <> :status:',
+                    'bind'       => ['status' => 'unpaid'],
+                ],
+            ]
+        );
+    }
+}
+```
+此外，从模型对象中访问模型关系时，可以使用`getRelated()`方法的第二个参数进一步对关联记录执行过滤或排序：
+```php
+<?php
+
+// Unpaid Invoices
+$company = Companies::findFirst(
+    [
+        'conditions' => 'id = :id:',
+        'bind'       => ['id' => 1],
+    ]
+);
+
+$unpaidInvoices = $company->InvoicesUnpaid;
+$unpaidInvoices = $company->getInvoicesUnpaid();
+$unpaidInvoices = $company->getRelated('InvoicesUnpaid');
+$unpaidInvoices = $company->getRelated(
+    'Invoices',
+    ['conditions' => 'inv_status = "paid"']
+);
+
+// 排序
+$unpaidInvoices = $company->getRelated(
+    'Invoices',
+    [
+        'conditions' => 'inv_status = "paid"',
+        'order'      => 'inv_created_date ASC',
+    ]
+);
+```
+## 虚拟外键(Virtual Foreign Keys)
+默认情况下，模型关系不同于数据库外键，插入 / 更新字段时，如果该字段在关联模型中没有对应的有效值，Phalcon不会生成错误验证消息。定义关系时，可以添加第四个参数来改变此行为。
+
+更改RobotsPart模型以演示此功能：
+```php
+<?php
+
+use Phalcon\Mvc\Model;
+
+class RobotsParts extends Model
+{
+    public $id;
+
+    public $robots_id;
+
+    public $parts_id;
+
+    public function initialize()
+    {
+        $this->belongsTo(
+            'robots_id',
+            'Store\Toys\Robots',
+            'id',
+            [
+                'foreignKey' => true,
+            ]
+        );
+
+        $this->belongsTo(
+            'parts_id',
+            'Parts',
+            'id',
+            [
+                'foreignKey' => [
+                    'message' => 'The part_id does not exist on the Parts model',
+                ],
+            ]
+        );
+    }
+}
+```
+如果将`belongsTo()`关系更改为外键，插入 / 更新这些字段时，会验证关联模型上对应字段是否有有效值
