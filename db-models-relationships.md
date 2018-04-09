@@ -2,7 +2,7 @@
 ## 模型关系(Relationships between Models)
 模型间有四种关系类型：一对一，一对多，多对一，多对多。可以是单向关系，也可以是多向关系，可以是一对一的简单关系，也可以是多对多的复杂关系。模型管理器负责管理这些关系的外键约束，有助于保证引用的完整性，以及方便快捷的访问关联模型记录。实现了模型关系，能够以统一的方式从每条记录访问关联模型数据。
 ## 单向关系(Unidirectional relationships)
-
+单向关系指一个模型和另一个模型关联，反之则不然。
 ## 双向关系(Bidirectional relations)
 双向关系指在两个模型中建立关系，每个模型中定义另一个模型的反向关系。
 ## 定义关系(Defining relationships)
@@ -718,4 +718,107 @@ $album->songs = $songs;
 
 // 保存记录
 $album->save();
+```
+同时保存album和artist，会隐式使用事务，如果保存记录时出现错误，记录都不会被保存。消息会回传给用户，以获取错误信息。
+
+注意：不能通过重载以下方法来添加关联记录：
+- `Phalcon\Mvc\Model::beforeSave()`
+- `Phalcon\Mvc\Model::beforeCreate()`
+- `Phalcon\Mvc\Model::beforeUpdate()`
+
+可以通过重载`Phalcon\Mvc\Model::save()`方法实现。
+## 操作结果集(Operations over Resultsets)
+如果结果集由完整对象组成，则能够以简单的方式对获取的记录执行操作：
+### 更新关联记录(Updating related records)
+与其这样：
+```php
+<?php
+
+$parts = $robots->getParts();
+
+foreach ($parts as $part) {
+    $part->stock      = 100;
+    $part->updated_at = time();
+
+    if ($part->update() === false) {
+        $messages = $part->getMessages();
+
+        foreach ($messages as $message) {
+            echo $message;
+        }
+
+        break;
+    }
+}
+```
+不如这样：
+```php
+<?php
+$robots->getParts()->update(
+    [
+        'stock'      => 100,
+        'updated_at' => time(),
+    ]
+);
+```
+`update()`接受一个匿名函数来过滤必须更新的记录：
+```php
+<?php
+
+$data = [
+    'stock'      => 100,
+    'updated_at' => time(),
+];
+
+// 更新所有记录，type = 'basic'的除外
+$robots->getParts()->update(
+    $data,
+    function ($part) {
+        if ($part->type === Part::TYPE_BASIC) {
+            return false;
+        }
+
+        return true;
+    }
+);
+```
+### 删除关联记录(Deleting related records)
+与其这样：
+```php
+<?php
+
+$parts = $robots->getParts();
+
+foreach ($parts as $part) {
+    if ($part->delete() === false) {
+        $messages = $part->getMessages();
+
+        foreach ($messages as $message) {
+            echo $message;
+        }
+
+        break;
+    }
+}
+```
+不如这样：
+```php
+<?php
+
+$robots->getParts()->delete();
+```
+`delete()`方法也接受一个匿名函数来过滤要删除的记录：
+```php
+<?php
+
+// 删除stock大于等于0的记录
+$robots->getParts()->delete(
+    function ($part) {
+        if ($part->stock < 0) {
+            return false;
+        }
+
+        return true;
+    }
+);
 ```
