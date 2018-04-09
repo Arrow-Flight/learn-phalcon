@@ -1,13 +1,13 @@
 # 使用模型
-模型表示应用程序信息(数据)和这些数据的处理规则，主要用于管理与对应数据表的交互规则。多数情况下，数据库中的每张表都有一个模型与之对应。应用程序中的大部分业务逻辑集中在模型中。
+模型表示应用程序信息(数据)以及这些数据的处理规则，主要用于管理与对应数据表的交互规则。大多数情况下，数据库中的每一张表都有对应的模型。应用程序中的大部分业务逻辑集中在模型中。
 
 Phalcon应用中，`Phalcon\Mvc\Model`是所有模型的基类。它提供了数据库独立、基础CRUD、高级查找、模型关联以及其他服务。
 
-`Phalcon\Mvc\Model`将方法动态的转换为对应的数据库操作，规避了使用SQL语句的必要。
+`Phalcon\Mvc\Model`将调用的方法动态转换为相应的数据库操作，避免了直接使用SQL。
 
 模型使用数据库高级抽象层，如果你想要使用更为底层的方式操作数据库，请参考`Phalcon\Db`组件文档。
 ## 创建模型(Creating Models)
-模型继承`Phalcon\Mvc\Model`类，以大驼峰格式命名。
+模型需继承`Phalcon\Mvc\Model`类，以大驼峰格式命名。
 ```php
 <?php
 
@@ -20,7 +20,7 @@ class RobotParts extends Model
 
 }
 ```
-如果你在使用PHP 5.4、5.5版本，建议在模型中声明对应数据表的所有字段，以节约内存。
+如果你使用PHP 5.4、5.5版本，建议在模型中声明对应数据表的所有字段，以节约内存。
 
 模型`Store\Toys\RobotParts`默认映射`robot_parts`表，可以调用`setSource()`方法手动指定映射表：
 ```php
@@ -57,7 +57,7 @@ class RobotParts extends Model
 }
 ```
 ### 公共属性和Setters、Getters方法(Public properties vs. Setters/Getters)
-模型可以定义公共属性，意味着在任何实例化了模型的代码中都可以读写模型的公共属性：
+模型可以定义公共属性，在任何获取了模型实例的地方都可以读写模型的公共属性：
 ```php
 <?php
 
@@ -136,7 +136,7 @@ class Robots extends Model
 
 使用`getters`和`setters`时，属性名中的下划线可能会导致问题。
 
-如果你在属性名中使用下划线，在声明`getters`和`setters`魔术方法时，仍然要使用驼峰格式(`$model->getPropertyName()`代替`$model->getProperty_name()`，`$model->findByPropertyName()`代替`$model->findByProperty_name()`等)。大多数系统推荐驼峰写法，而不是下划线写法，所以建议你按照文档中的写法来命名属性。你可以使用字段映射(如上所述)以确保属性正确映射到数据表中对应字段。
+如果你在属性名中使用下划线，在声明`getters`和`setters`魔术方法时，仍然要使用驼峰格式(`$model->getPropertyName()`代替`$model->getProperty_name()`，`$model->findByPropertyName()`代替`$model->findByProperty_name()`等)。大多数系统推荐驼峰写法，而不是下划线写法，所以建议你按照文档中的写法为属性命名。你可以使用字段映射(如上所述)以确保属性正确映射到数据表中对应字段。
 
 ## 理解记录对象(Understanding Records To Objects)
 模型的每一个实例代表数据表中的一条记录，你可以通过读取模型对象属性来访问记录数据。例如，表`robots`有如下记录：
@@ -163,7 +163,7 @@ $robot = Robots::findFirst(3);
 // 输出'Terminator'
 echo $robot->name;
 ```
-一旦记录存储在内存中，你可以修改其中的数据并保存：
+一旦记录存储在内存中，就可以修改其中的数据并保存：
 ```php
 <?php
 
@@ -175,7 +175,7 @@ $robot->name = 'RoboCop';
 
 $robot->save();
 ```
-如你所见，`Phalcon\Mvc\Model`为web应用提供了数据库高级抽象层，不需要使用原生SQL语句。
+`Phalcon\Mvc\Model`为web应用提供了数据库高级抽象层，不需要使用原生SQL语句。
 ## 查找记录(Finding Records)
 `Phalcon\Mvc\Model`提供了多种查询记录的方法，下面例子演示如何用模型查找一条或多条记录：
 ```php
@@ -214,9 +214,9 @@ foreach ($robots as $robot) {
     echo $robot->name, "\n";
 }
 ```
-如果你想通过外部数据(如用户输入)或变量查找记录，必须使用数据绑定。
+如果要使用外部数据(如用户输入)或变量查找记录，必须进行参数绑定。
 
-你可以使用`findFirst()`方法，获取满足给定条件的第一条记录：
+可以使用`findFirst()`方法，获取满足给定条件的第一条记录：
 ```php
 <?php
 
@@ -281,7 +281,7 @@ $robots = Robots::find(
                 </code>
             </td>
             <td>
-                查询操作的搜索条件，用于提取符合指定条件的记录。默认情况下，<code>Phalcon\Mvc\Model</code>假定第一个参数就是搜索条件
+                查询操作的搜索条件，用于筛选符合指定条件的记录。默认情况下，<code>Phalcon\Mvc\Model</code>假定第一个参数就是搜索条件
             </td>
             <td>
                 <code>
@@ -296,7 +296,7 @@ $robots = Robots::find(
                 </code>
             </td>
             <td>
-                获取模型中的指定字段，而不是所有字段。使用此选项时，会返回一个不完整对象。
+                获取模型中的指定字段，而不是所有字段。使用此选项时，返回不完整对象。
             </td>
             <td>
                 <code>
@@ -471,7 +471,9 @@ $robots = Robots::query()
     ->execute();
 ```
 静态方法`query()`返回一个IDE自动完成友好的`Phalcon\Mvc\Model\Criteria`对象。
-所有查询在内部都以PHQL查询的方式处理。PHQL是一种高级的、面向对象的类SQL语言，这种语言提供了许多功能来执行查询，如join其他模型，定义分组，添加聚合等。
+
+所有查询在内部都以PHQL查询的方式处理。PHQL是一种高级的、面向对象的类SQL语言，这种语言提供了多种功能来执行查询，如join其他模型，定义分组，添加聚合等。
+
 最后，还有一个`findFirstBy<property-name>()`方法，该方法扩展了`findFirst()`方法，它允许你通过使用方法中的属性名称并向它传递一个包含要在该字段中搜索数据的参数，从表中快速执行检索。以上面的Robots模型为例：
 ```php
 <?php
@@ -489,7 +491,7 @@ class Robots extends Model
     public $price;
 }
 ```
-这里有三个属性：`$id`，`$name`和`$price`，假设你想要检索name为'Terminator'的第一条记录，代码如下：
+这里有三个属性：`$id`，`$name`和`$price`，假设要检索name为'Terminator'的第一条记录，代码如下：
 ```php
 <?php
 
@@ -507,7 +509,7 @@ if ($robot) {
 ```
 请注意，我们在调用的方法中使用了Name并传递了变量`$name`，表中name字段值为`$name`的记录就是我们要查找的。
 ### 模型结果集(Model Resultsets)
-`findFirst()`方法返回被调用类的实例(如果有结果返回)，而`find()`方法返回`Phalcon\Mvc\Model\Resultsets\Simple`对象，该对象封装了结果集应有的所有功能，如遍历，找特定记录，统计等。
+`findFirst()`方法返回被调用类的实例(如果有结果返回)，而`find()`方法返回`Phalcon\Mvc\Model\Resultsets\Simple`对象，该对象封装了结果集应有的所有功能，如遍历，查找特定记录，统计等。
 
 这些对象比一般数组功能强大，`Phalcon\Mvc\Model\Resultset`一个最大的特点是，任何时刻，只有一条记录保存在内存中。这对内存管理有极大帮助，特别是在处理大批量数据时。
 ```php
@@ -561,7 +563,7 @@ Phalcon结果集模拟游标，你可以通过访问其位置或内部指针获�
 
 将大量查询结果保存在内存中会消耗太多资源，因此，在某些情况下，以32条记录为一块从数据库中获取记录，可以降低重复执行请求的内存消耗。
 
-注意，结果集可以序列化后存储在缓存中，`Phalcon\Cache`有助于实现该需求。但是序列化数据会导致`Phalcon\Mvc\Model`会以数组形式保存从数据库中检索到的数据，这会导致更多的内存消耗。
+注意，结果集可以序列化后存储在缓存中，`Phalcon\Cache`可以实现该需求。但是序列化数据会导致`Phalcon\Mvc\Model`以数组形式保存从数据库中检索到的数据，这会导致更多的内存消耗。
 ```php
 <?php
 
@@ -646,7 +648,7 @@ $robots = Robots::find(
 $this->view->mydata = $robots->getSomeData();
 ```
 ### 过滤结果集(Filtering Resultsets)
-过滤数据最有效的方法之一是设置搜索条件，数据库将使用表索引更快的返回数据。Phalcon允许你使用PHP以及数据库不支持的方式过滤数据:
+过滤数据最有效的方法之一是设置搜索条件，数据库将使用表索引更快的返回数据。Phalcon允许你使用PHP函数或是数据库不支持的方式过滤数据:
 ```php
 <?php
 
@@ -701,7 +703,7 @@ $robots = Robots::find(
     ]
 );
 ```
-使用数字占位符时，你需要将它们定义成整数形式，即1或2。而'1'或'2'会被当成字符串，所以占位符不能被成功替换。
+使用数字占位符时，需要将它们定义成整数形式，即1或2。而'1'或'2'会被当成字符串，所以占位符不能被成功替换。
 
 字符串会自动使用PDO转义，该功能会考虑连接字符集，因此建议在连接参数或数据库配置中定义正确字符集，因为错误字符集会在存储和检索数据时产生不良影响。
 
@@ -757,7 +759,7 @@ $robots = Robots::find(
     ]
 );
 ```
-参数绑定除了可用于所有查询方法，如`find()`和`findFirst()`外，还可用于`count()`，`sum()`，`average()`等计算方法。
+参数绑定除了可用于所有查询方法，如`find()`和`findFirst()`外，还可用于`count()`，`sum()`，`average()`等统计方法。
 
 使用`finders`时，会自动使用参数绑定：
 ```php
@@ -1027,9 +1029,9 @@ $robot = new Robots();
 
 $robot->save($_POST);
 ```
-毫无防护的批量值传递可能会允许攻击者设置任何数据库字段的值，仅在你允许用户插入 / 更新模型中所有字段的情况下使用上述功能，即使这些字段不是使用表单提交的。
+毫无防护的批量传值可能会允许攻击者设置任意字段的值，仅在你允许用户插入 / 更新模型中所有字段的情况下使用上述功能，即使这些字段不是使用表单提交的。
 
-可以在`save()`方法中设置额外参数，以设置批量值传递时，执行插入 / 更新操作的白名单字段。
+可以在`save()`方法中设置额外参数，以设置批量传值时，执行插入 / 更新操作的白名单字段。
 ```php
 <?php
 
@@ -1046,7 +1048,7 @@ $robot->save(
 );
 ```
 ### 创建 / 更新执行结果(Create / Update with Confidence)
-应用程序高并发时，创建记录操作可能会变成更新操作。使用`Phalcon\Mvc\Model::save()`方法保存记录时，就可能发生这种情况。如果想确保执行创建或更新，可以使用`create()`和`update()`方法替换`save()`：
+应用程序高并发时，创建记录操作可能会变成更新操作。使用`Phalcon\Mvc\Model::save()`方法保存记录时，可能发生这种情况。如果想确保执行创建或更新，可以使用`create()`和`update()`方法替换`save()`：
 ```php
 <?php
 
@@ -1185,7 +1187,7 @@ class Robots extends Model
 }
 ```
 ## Hydrations模式(Hydration Modes)
-如前所述，结果集是完整对象的集合，这意味着每个返回结果都是一个对象，代表数据表中的一行。这些对象可以修改并永久保存：
+如前所述，结果集是完整对象的集合，这意味着每条返回结果都是一个对象，代表数据表中的一行。这些对象可以修改并永久保存：
 ```php
 <?php
 
@@ -1200,7 +1202,7 @@ foreach ($robots as $robot) {
     $robot->save();
 }
 ```
-有时记录只能以只读模式呈现给用户，这种情况下，改变记录的展现方式可能有助于用户处理数据。用于表示结果集中返回的对象的策略成为'hydration mode'：
+有时记录只能以只读模式呈现给用户，这种情况下，改变记录的展现方式有助于用户处理数据。用于表示结果集中返回的对象的策略称为'hydration mode'：
 ```php
 <?php
 
@@ -1254,7 +1256,7 @@ foreach ($robots as $robot) {
 }
 ```
 ## 表前缀(Table prefixes)
-如果希望所有表名称都有特定前缀，并且不想在所有模型中都调用`setSource()`方法，则可以调用`Phalcon\Mvc\Model\Manager`的`setModelprefix()`方法：
+如果希望所有表名称都有特定前缀，并且不想在每个模型中都调用`setSource()`方法，则可以调用`Phalcon\Mvc\Model\Manager`的`setModelprefix()`方法：
 ```php
 <?php
 
@@ -1272,7 +1274,7 @@ $robots = new Robots(null, null, $manager);
 echo $robots->getSource(); // 返回wp_robots
 ```
 ## 自动生成的标识字段(Auto-generated identity columns)
-某些模型有标识字段，这些字段通常是映射表的主键。`Phalcon\Mvc\Model`能够识标识字段，并在生成INSERT语句时忽略它，所以数据库能够自动为它生成一个值。创建记录之后，标识字段的值会被注册为数据库为其生成的值:
+某些模型有标识字段，这些字段通常是映射表的主键。`Phalcon\Mvc\Model`能够识别标识字段，并在生成INSERT语句时忽略它，所以数据库能够自动为它生成一个值。创建记录之后，标识字段的值会被注册为数据库为其生成的值:
 ```php
 <?php
 
@@ -1280,7 +1282,7 @@ $robot->save();
 
 echo 'The generated id is: ', $robot->id;
 ```
-`Phalcon\Mvc\Model`能够识别标识字段，根据数据库系统，这些字段可能PostgreSQL的串行列，或者是MySQL的自增列。
+`Phalcon\Mvc\Model`能够识别标识字段，根据数据库系统，这些字段可能是PostgreSQL的串行列，或者是MySQL的自增列。
 
 PostgreSQL使用序列生成自增值，默认情况下，Phalcon试图从序列`table_field_seq`中获取生成的值，例如：`robots_id_seq`，如果序列具有其他名称，则需要实现`getSequenceName()`方法：
 ```php
@@ -1335,7 +1337,7 @@ class Robots extends Model
     }
 }
 ```
-这将全局忽略整个应用程序中每个INSERT / UPDATE操作的这些字段。如果想在不同的INSERT / UPDATE操作时忽略不同字段，可以传递第二个参数(布尔值) - true。强制使用默认值，实现方式如下：
+这将全局忽略应用程序中每个INSERT / UPDATE操作的这些字段。如果想在不同的INSERT / UPDATE操作时忽略不同字段，可以传递第二个参数(布尔值) - true。强制使用默认值，实现方式如下：
 ```php
 <?php
 
@@ -1371,7 +1373,7 @@ class Robots extends Model
 ```
 切勿使用`Phalcon\Db\RawValue`传递外部数据(如用户输入)或可变数据，因为参数绑定时，这些字段的值也会被忽略，所以有可能会被用来实施注入攻击。
 ## 动态更新(Dynamic Updates)
-UPDATE语句默认使用模型中定义的所有字段创建(全字段更新SQL)，可以更改特定模型以进行动态更新，只用有更新的字段创建SQL语句。
+UPDATE语句默认使用模型中定义的所有字段创建(全字段更新SQL)，可以更改特定模型以进行动态更新，用需要更新的字段创建SQL语句。
 ```php
 <?php
 
@@ -1388,7 +1390,7 @@ class Robots extends Model
 }
 ```
 ## 独立列映射
-ORM支持独立的列映射，它允许开发者在模型中定义与映射表列名称不相同的字段名，Phalcon会识别新的字段名称，并重命名字段以匹配数据库中相应的列。这是一项很棒的功能，当需要重命名数据库中的列名称时，不用为需要更改所有查询代码而担心，模型中的映射列会处理好这一切。例如：
+ORM支持独立的列映射，它允许开发者在模型中定义与映射表列名称不相同的字段名，Phalcon会识别新的字段名称，并重命名字段以匹配数据库中相应的列。这是一项很棒的功能，当需要重命名数据库中的列名称时，不需要更改查询代码，模型中的映射列会处理好这一切。例如：
 ```php
 <?php
 
@@ -1417,7 +1419,7 @@ class Robots extends Model
     }
 }
 ```
-然后，你可以很自然的使用新的字段名:
+然后，可以使用新的字段名:
 ```php
 <?php
 
@@ -1460,7 +1462,7 @@ $robot->save();
 
 - 使用自定义约定编写应用程序
 - 清除代码中列的前后缀
-- 改变列名称而无需更改应用代码
+- 改变列名称时，无需更改应用代码
 
 ## 记录快照(Record Snapshots)
 查询时可以设置特定的模型以保持记录快照。可以使用此功能来实现审计，或是根据持久性查询的数据了解哪些字段发生了改变：
@@ -1479,7 +1481,7 @@ class Robots extends Model
     }
 }
 ```
-当激活此同能时，应用程序消耗更多的内存来与持久性查询的原始数据保持同步。在激活此功能的模型中，你可以按如下方式检查发生改变的字段：
+当激活此功能时，应用程序会消耗更多的内存来与持久性查询的原始数据保持同步。在激活此功能的模型中，可以按如下方式检查发生改变的字段：
 ```php
 <?php
 
@@ -1497,9 +1499,9 @@ var_dump($robot->hasChanged('name')); // true
 
 var_dump($robot->hasChanged('type')); // false
 ```
-快照会在模型创建 / 更新时更新，使用`hasUpdated()`方法和`getUploadedFields()`方法检查create / save / update操作后，字段是否更新。但是在`afterUpdate()`，`afterSave()`和`afterCreate()`方法中调用`getChangedFields()`方法，会导致应用程序出问题。
+快照会在模型创建 / 更新时自动更新，使用`hasUpdated()`方法和`getUploadedFields()`方法检查create / save / update操作后，字段是否更新。但是在`afterUpdate()`，`afterSave()`和`afterCreate()`方法中调用`getChangedFields()`方法，会导致应用程序出问题。
 
-你可以禁用此功能：
+可以禁用此功能：
 ```php
 <?php
 
@@ -1546,7 +1548,7 @@ array(1) {
 array(0) {
 }
 ```
-`getUpdatedFields()`方法将正确返回更新的字段，或如上所述，你可以通过设置相关的ini值回到先前的行为。
+`getUpdatedFields()`方法将正确返回更新的字段，或如上所述，可以通过设置相关的ini值回到先前的行为。
 ## 指向不同模式(Pointing to a different schema)
 如果模型映射到非默认的模式 / 数据库，可以使用`setSchema()`方法重新定义它：
 ```php
@@ -1618,7 +1620,7 @@ class Robots extends Model
     }
 }
 ```
-Phalcon提供了更灵活的操作，你可以定义只读连接或写连接，这对于负载均衡和主从架构的的数据库非常有用：
+Phalcon提供了更灵活的操作，可以定义只读连接或写连接，这对于负载均衡和主从架构的的数据库非常有用：
 ```php
 <?php
 
@@ -1637,3 +1639,283 @@ class Robots extends Model
 }
 ```
 ORM还支持分片功能，允许你根据当前查询条件实施分片选择：
+```php
+<?php
+
+namespace Store\Toys;
+
+use Phalcon\Mvc\Model;
+
+class Robots extends Model
+{
+    /**
+     * 动态选择分片
+     * @param  array $intermediate
+     * @param  array $bindParams
+     * @param  array $bindTypes
+     */
+    public function selectReadConnection($intermediate, $bindParams, $bindTypes)
+    {
+        // 检查select语句中是否有where子句
+        if (isset($intermediate['where'])) {
+            $conditions = $intermediate['where'];
+
+            // 根据条件选择可能的分片
+            if ($conditions['left']['name'] === 'id') {
+                $id = $conditions['right']['value'];
+
+                if ($id > 0 && $id < 10000) {
+                    return $this->getDI()->get('dbShard1');
+                }
+
+                if ($id > 10000) {
+                    return $this->getDI()->get('dbShard2');
+                }
+            }
+        }
+
+        // 使用默认分片
+        return $this->getDI()->get('dbShard0');
+    }
+}
+```
+`selectReadConnection()`方法选择合适的连接，会影响任何新执行的查询：
+```php
+<?php
+
+use Store\Toys\Robots;
+
+$robot = Robots::findFirst('id = 101');
+```
+## 注入服务到模型(Injecting services into Models)
+你可能需要在模型中访问应用程序服务，以下示例介绍了如何执行此操作：
+```php
+<?php
+
+namespace Store\Toys;
+
+use Phalcon\Mvc\Model;
+
+class Robots extends Model
+{
+    public function notSaved()
+    {
+        // 从DI容器中获取flash服务
+        $flash = $this->getDI()->getFlash();
+
+        $messages = $this->getMessages();
+
+        // 显示验证消息
+        foreach ($messages as $message) {
+            $flash->error($message);
+        }
+    }
+}
+```
+创建或更新操作执行失败时会触发`notSaved`事件，因此我们从DI容器中获取`flash`服务，然后闪存验证消息。这样，我们不必在每次保存后打印消息。
+## 禁用 / 启用功能(Disabling / Enabling Features)
+在ORM中，我们实现了一种机制，允许你在全局范围内启用 / 禁用特定功能或选项，根据ORM的使用情况，你可以禁用那些你没有使用到的功能。如有需要，下面这些选项可以暂时禁用：
+```php
+<?php
+
+use Phalcon\Mvc\Model;
+
+Model::setup(
+    [
+        'events'         => false,
+        'columnRenaming' => false,
+    ]
+);
+```
+可用选项：
+
+<table>
+    <thead>
+        <tr>
+            <th>选项</th>
+            <th>说明</th>
+            <th>默认值</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>astCache</td>
+            <td>启用 / 禁用模型中的回调、钩子和事件通知</td>
+            <td>
+                <code>null</code>
+            </td>
+        </tr>
+        <tr>
+            <td>cacheLevel</td>
+            <td>设置ORM的缓存级别</td>
+            <td>
+                <code>3</code>
+            </td>
+        </tr>
+        <tr>
+            <td>castOnHydrate</td>
+            <td></td>
+            <td>
+                <code>false</code>
+            </td>
+        </tr>
+        <tr>
+            <td>columnRenaming</td>
+            <td>启用 / 禁用字段重命名</td>
+            <td>
+                <code>true</code>
+            </td>
+        </tr>
+        <tr>
+            <td>disableAssignSetters</td>
+            <td>模型中禁用setter</td>
+            <td>
+                <code>false</code>
+            </td>
+        </tr>
+        <tr>
+            <td>enableImplicitJoins</td>
+            <td></td>
+            <td>
+                <code>true</code>
+            </td>
+        </tr>
+        <tr>
+            <td>enableLiterals</td>
+            <td></td>
+            <td>
+                <code>true</code>
+            </td>
+        </tr>
+        <tr>
+            <td>escapeIdentifiers</td>
+            <td></td>
+            <td>
+                <code>true</code>
+            </td>
+        </tr>
+        <tr>
+            <td>events</td>
+            <td>启用 / 禁用模型中的回调、钩子和事件通知</td>
+            <td>
+                <code>true</code>
+            </td>
+        </tr>
+        <tr>
+            <td>exceptionOnFailedSave</td>
+            <td>启用 / 禁用<code>save()</code>操作失败时抛出异常</td>
+            <td>
+                <code>false</code>
+            </td>
+        </tr>
+        <tr>
+            <td>forceCasting</td>
+            <td></td>
+            <td>
+                <code>false</code>
+            </td>
+        </tr>
+        <tr>
+            <td>ignoreUnknownColumns</td>
+            <td>启用 / 禁用忽略模型上的未知字段</td>
+            <td>
+                <code>false</code>
+            </td>
+        </tr>
+        <tr>
+            <td>lateStateBinding</td>
+            <td>启用 / 禁用<code>Phalcon\Mvc\Model::cloneResultMap()</code>方法的延迟绑定</td>
+            <td>
+                <code>false</code>
+            </td>
+        </tr>
+        <tr>
+            <td>notNullValidations</td>
+            <td>ORM自动验证映射表中的非空列</td>
+            <td>
+                <code>true</code>
+            </td>
+        </tr>
+        <tr>
+            <td>parserCache</td>
+            <td></td>
+            <td>
+                <code>null</code>
+            </td>
+        </tr>
+        <tr>
+            <td>phqlLiterals</td>
+            <td>启用 / 禁用PHQL解析器中的字面量</td>
+            <td>
+                <code>true</code>
+            </td>
+        </tr>
+        <tr>
+            <td>uniqueCacheId</td>
+            <td></td>
+            <td>
+                <code>3</code>
+            </td>
+        </tr>
+        <tr>
+            <td>updateSnapshotOnSave</td>
+            <td>启用 / 禁用<code>save()</code>方法的更新快照</td>
+            <td>
+                <code>true</code>
+            </td>
+        </tr>
+        <tr>
+            <td>virtualForeignKeys</td>
+            <td>启用 / 禁用虚拟外键</td>
+            <td>
+                <code>true</code>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+注意，给`Phalcon\Mvc\Model::assign()`方法(创建 / 更新 / 保存模型中常用到它)传递参数时，`setters`始终会被调用，这会给应用程序增加额外开销。可以在php.ini文件中添加配置`phalcon.orm.disable_assign_setters = 1`，这样就只会简单的使用`$this->property = value`。
+## 独立组件(Stand-Along component)
+下面演示以独立组件模式使用`Phalcon\Mvc\Model`：
+```php
+<?php
+
+use Phalcon\Di;
+use Phalcon\Mvc\Db\Adapter\Pdo\Sqlite as Connection;
+use Phalcon\Mvc\Model;
+use Phalcon\Mvc\Model\Manager as ModelsManager;
+use Phalcon\Mvc\Model\Metadata\Memory as MetaData;
+
+$di = new Di();
+
+// 建立连接
+$di->set(
+    'db',
+    new Connection(
+        [
+            'dbname' => 'sample.db',
+        ]
+    )
+);
+
+// 创建模型管理器
+$di->set(
+    'modelsManager',
+    new ModelsManager()
+);
+
+// 使用内存元数据适配器或其他
+$di->set(
+    'modelsMetadata',
+    new MetaData()
+);
+
+// 创建模型
+class Robots extends Model
+{
+
+}
+
+// 使用模型
+echo Robots::count();
+```
