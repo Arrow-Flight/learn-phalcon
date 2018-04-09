@@ -1,6 +1,6 @@
 # 模型关系(Model Relationships)
 ## 模型关系(Relationships between Models)
-模型间有四种关系类型：一对一，一对多，多对一，多对多。可以是单向关系，也可以是多向关系，可以是一对一的简单关系，也可以是多对多的复杂关系。模型管理器负责管理这些关系的外键约束，有助于保证引用的完整性，以及方便快捷的访问关联模型记录。实现了模型关系，能够以统一的方式从每条记录访问关联模型数据。
+模型间有四种关系类型：一对一，一对多，多对一，多对多。可以是单向关系，也可以是多向关系，可以是一对一的简单关系，也可以是多对多的复杂关系。模型管理器负责管理这些关系的外键约束，以保证引用的完整性，以及方便快捷的访问关联模型记录。实现了模型关系，就能够以统一的方式从每条记录访问关联模型数据。
 ## 单向关系(Unidirectional relationships)
 单向关系指一个模型和另一个模型关联，反之则不然。
 ## 双向关系(Bidirectional relations)
@@ -192,7 +192,7 @@ use Store\Toys\Robots;
 $robot = Robots::findFirst();
 
 // RobotsParts中的关联记录
-$robotsParts$robot->robotsParts;
+$robotsParts = $robot->robotsParts;
 ```
 也可以使用魔术方法`getter`：
 ```php
@@ -362,7 +362,7 @@ class RobotsSimilar extends Phalcon\Mvc\Model
     }
 }
 ```
-由于两个关系都指向同一模型(Robots)，获取关联模型记录可能会不清晰：
+由于两个关系都指向同一模型(Robots)，获取关联模型记录可能不够明确：
 ```php
 <?php
 
