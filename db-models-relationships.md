@@ -581,4 +581,141 @@ class RobotsParts extends Model
     }
 }
 ```
-如果将`belongsTo()`关系更改为外键，插入 / 更新这些字段时，会验证关联模型上对应字段是否有有效值
+如果将`belongsTo()`关系更改为外键，插入 / 更新这些字段时，会验证关联模型上对应字段是否具有有效值。同样，更改`hasMany()`方法和`hasOne()`方法，如果关联模型正在使用当前模型记录，则该记录不允许被删除。
+```php
+<?php
+
+use Phalcon\Mvc\Model;
+
+class Parts extends Model
+{
+    public function initialize()
+    {
+        $this->hasMany(
+            'id',
+            'RobotsParts',
+            'parts_id',
+            [
+                'foreignKey' => [
+                    'message' => 'The part cannot be deleted because other rotobs are using it',
+                ],
+            ]
+        );
+    }
+}
+```
+虚拟外键可以设置字段允许null值：
+```php
+<?php
+
+use Phalcon\Mvc\Model;
+
+class RobotsParts extends Model
+{
+    public $id;
+
+    public $robots_id;
+
+    public $parts_id;
+
+    public function initialize()
+    {
+        $this->belongsTo(
+            'parts_id',
+            'Parts',
+            'id',
+            [
+                'foreignKey' => [
+                    'allowNulls' => true,
+                    'message'    => 'The part_id does not exists on the Parts model',
+                ],
+            ]
+        );
+    }
+}
+```
+### 级联 / 限制行为(Cascade / Restrict actions)
+充当外键角色的虚拟外键限制了记录创建 / 更新 / 删除，以保证数据完整性：
+```php
+<?php
+
+namespace Store\Toys;
+
+use Phalcon\Mvc\Model;
+use Phalcon\Mvc\Model\Relation;
+
+class Robots extends Model
+{
+    public $id;
+
+    public $name;
+
+    public function initialize()
+    {
+        $this->hasMany(
+            'id',
+            'Parts',
+            'robots_id',
+            [
+                'foreignKey' => [
+                    'action' => Relation::ACTION_CASCADE,
+                ],
+            ]
+        );
+    }
+}
+```
+## 存储关联记录(Storing Related Recods)
+魔术属性可以用于存储记录及其关联属性：
+```php
+<?php
+
+// 创建artist记录
+$artist = new Artists();
+
+$artist->name    = 'Shinichi Osawa';
+$artist->country = 'Japan';
+
+// 创建album记录
+$album = new Albums();
+
+$album->name   = 'The One';
+$album->artist = $artist;
+$album->year   = 2008;
+
+// 保存记录
+$album->save();
+```
+一对多关系中，保存记录及相关记录：
+```php
+<?php
+
+// 获取artist现有记录
+$artist = Artists::findFirst(
+    'name = "Shinichi Osawa"'
+);
+
+// 创建album记录
+$album = new Albums();
+
+$album->name   = 'The One';
+$album->artist = $artist;
+
+$songs = [];
+
+// 创建第一条song记录
+$songs[0]           = new Songs();
+$songs[0]->name     = 'Star Guitar';
+$songs[0]->duration = '5:54';
+
+// 创建第二条song记录
+$songs[1]           = new Songs();
+$songs[1]->name     = 'Last Days';
+$songs[1]->duration = '4:29';
+
+// 传递songs数组
+$album->songs = $songs;
+
+// 保存记录
+$album->save();
+```
