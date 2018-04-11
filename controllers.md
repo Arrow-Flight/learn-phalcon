@@ -228,7 +228,7 @@ class FilesController extends Controller
 }
 ```
 ## 请求和响应(Request and Response)
-假设框架提供了一组预先注册好的服务。`request`服务包含一个`Phalocn\Http\Request`实例，`response`服务包含一个`Phalcon\Http\Response`服务，表示将要发送给客户端的内容。
+假设框架预先注册好了服务。`request`服务包含一个`Phalocn\Http\Request`实例，`response`服务包含一个`Phalcon\Http\Response`实例，表示将要发送给客户端的内容。
 ```php
 <?php
 
@@ -293,7 +293,7 @@ class UserController extends Controller
 }
 ```
 ## 服务充当控制器(Using Services as Controller)
-服务可以充当控制器，控制器总是从服务容器中请求。因此，以类名称注册的任何类，都可以充当控制器角色：
+服务可以充当控制器，控制器总是从服务容器中请求。因此，以类名称注册的任何服务，都可以充当控制器角色：
 ```php
 <?php
 
@@ -318,7 +318,7 @@ $di->set(
 );
 ```
 ## 控制器事件(Events in Controllers)
-控制器自动监听调度事件，实现与事件名称同名的方法，可以操作执行之前 / 之后实现钩子：
+控制器自动监听调度事件，实现与事件名称同名的方法，可以在操作执行之前 / 之后实现钩子：
 ```php
 <?php
 
