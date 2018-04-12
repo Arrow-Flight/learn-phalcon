@@ -56,7 +56,7 @@ $response->setHeader('Content-Disposition', 'attachment; filename="downloaded.pd
 // 设置原生HTTP响应头
 $response->setRawHeader('HTTP/1.1 200 OK');
 ```
-`Phalcon\Http\Response\Headers`类在内部管理所有响应头，它会在响应头被发送之前检索所有响应头：
+`Phalcon\Http\Response\Headers`类在管理所有响应头，它会在响应头被发送之前检索所有响应头：
 ```php
 <?php
 
@@ -96,17 +96,17 @@ return $response->redirect(
     ]
 );
 ```
-注意，重定向不会禁用视图组件。如果当前方法存在相应的视图，无论如何都会输出视图。可以在控制器中调用`$this->view->disable()`禁用视图。
+注意，重定向不会禁用视图组件。如果当前方法存在对应的视图，视图始终会被输出。可以在控制器中调用`$this->view->disable()`禁用视图。
 ## HTTP缓存
-提高应用性能、减少服务器拥堵最简单方法之一是使用HTTP缓存。大多数现代浏览器支持HTTP缓存，这也是当前许多网站访问速度很快的原因之一。
+使用HTTP缓存可以提高应用性能，减小服务器访问压力，大多数现代浏览器支持HTTP缓存。
 
-当应用程序第一次提供页面时，HTTP缓存可以在发送的响应头信息里更改：
-- `Expires:`可以设置一个将来或过去的日期，告诉浏览器页面什么时候过期。
+当应用程序第一次提供页面时，HTTP缓存可以在发送的响应头信息里设置：
+- `Expires:`设置一个将来或过去的日期，告诉浏览器页面什么时候过期。
 - `Cache-Control:`告诉浏览器，页面应该缓存多久
 - `Last-Modified:`告诉浏览器，页面的最后改动时间
 - `ETag:`包含当前页面最后改动时间戳的唯一标识
 ### 设置过期时间(Setting an Expiration Time)
-过期时间是在客户端缓存页面最简单有效的方法之一。从当前时间开始，添加浏览器缓存页面的时长。在有效期内，不会向服务器请求新内容：
+从当前时间开始，添加浏览器缓存页面的时长。在有效期内，浏览器不会向服务器请求新内容：
 ```php
 <?php
 
@@ -126,7 +126,7 @@ $expiryDate->modify('-10 minutes');
 
 $response->setExpires($expiryDate);
 ```
-浏览器根据客户端的时间来判断给定时间是否过期。客户端时间可以被修改，使页面过期，这也是该缓存机制的局限性。
+浏览器根据客户端时间判断给定时间是否过期。客户端时间可以被修改，导致缓存页面过期。
 ### Cache-Control
 Cache-Control提供了一种更加安全的方式来缓存页面。只需指定一个秒数，告诉浏览器页面该缓存多长时间：
 ```php
@@ -143,7 +143,7 @@ $response->setHeader('Cache-Control', 'max-age=86400');
 $response->setHeader('Cache-Control', 'private, max-age=0, must-relatidate');
 ```
 ### E-Tag
-`entity-tag`或`E-tag`是一个唯一标识符，帮助浏览器分析两个请求间页面是否发生改变。如果先前提供的内容以发生改变，则此标识符必须重新计算：
+`entity-tag`或`E-tag`是一个唯一标识符，帮助浏览器分析两个请求间页面是否发生改变。如果先前提供的内容已发生改变，则此标识符必须重新计算：
 ```php
 <?php
 
