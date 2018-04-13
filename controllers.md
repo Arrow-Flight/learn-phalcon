@@ -112,7 +112,7 @@ class PostsController extends Controller
         );
 
         // 转发给另一个方法
-        $this->dispatcher->forwar(
+        $this->dispatcher->forward(
             [
                 'controller' => 'users',
                 'action'     => 'signin',
