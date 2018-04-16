@@ -14,26 +14,26 @@
     <tbody>
         <tr>
             <td>
-                <code>Phalcon\\Db\\Adapter\\Pdo\\Mysql</code>
+                <code>Phalcon\Db\Adapter\Pdo\Mysql</code>
             </td>
             <td>世界上最流行的关系型数据库系统(RDBMS)，作为服务器运行，支持多用户、多数据库访问</td>
         </tr>
         <tr>
             <td>
-                <code>Phalcon\\Db\\Adapter\\Pdo\\Postgresql</code>
+                <code>Phalcon\Db\Adapter\Pdo\Postgresql</code>
             </td>
             <td>Postgresql是一个强大的开源关系数据库系统，超过15年的发展和通过验证的架构，为其赢得了正确、可靠、数据完整的良好声誉</td>
         </tr>
         <tr>
             <td>
-                <code>Phalcon\\Db\\Adapter\\Pdo\\Sqlite</code>
+                <code>Phalcon\Db\Adapter\Pdo\Sqlite</code>
             </td>
             <td>SQLite是一个实现自包含、无服务、零配置的事务型数据库</td>
         </tr>
     </tbody>
 </table>
 
-### 工厂类
+### 工厂类(Factory)
 使用适配器选项加载PDO：
 ```php
 <?php
@@ -65,19 +65,19 @@ phalcon语言封装了每个数据库的具体操作，为适配器提供通用�
     <tbody>
         <tr>
             <td>
-                <code>Phalcon\\Db\\Dialect\\Mysql</code>
+                <code>Phalcon\Db\Dialect\Mysql</code>
             </td>
             <td>MySQL特定语言</td>
         </tr>
         <tr>
             <td>
-                <code>Phalcon\\Db\\Dialect\\Postgresql</code>
+                <code>Phalcon\Db\Dialect\Postgresql</code>
             </td>
             <td>Postgresql特定语言</td>
         </tr>
         <tr>
             <td>
-                <code>Phalcon\\Db\\Dialect\\Sqlite</code>
+                <code>Phalcon\Db\Dialect\Sqlite</code>
             </td>
             <td>SQLite特定语言</td>
         </tr>
@@ -120,10 +120,10 @@ $config = [
 $config['schema'] = 'public';
 
 // 建立连接
-$connection = new \Phalcon\Db\Adapte\Pdo\Postgresql($config);
+$connection = new \Phalcon\Db\Adapter\Pdo\Postgresql($config);
 ```
 ## 设置额外的PDO选项(Setting up additional PDO options)
-你可以在建立连接的时候,传递`options`参数设置PDO：
+在建立连接时,传递`options`参数设置PDO：
 ```php
 <?php
 
@@ -142,7 +142,7 @@ $connection = new \Phalcon\Db\Adapter\Pdo\Mysql(
 );
 ```
 ## 使用工厂类连接数据库(Connecting using Factory)
-你可以使用一个简单的ini文件来配置/连接数据库。
+使用一个简单的ini文件来配置 / 连接数据库。
 ```ini
 [database]
 host     = TEST_DB_MYSQL_HOST
@@ -172,7 +172,7 @@ $di->set(
     }
 );
 ```
-上述代码返回数据库连接实例，这样做的好处是你可以在不修改应用中代码的情况下改变数据库连接甚至是数据库适配器。
+上述代码返回数据库连接实例，这样做的好处是可以在不修改应用代码的情况下改变数据库连接甚至是数据库适配器。
 ## 查询记录(Finding Rows)
 `Phalcon\Db`提供了多种查询方法。这种情况下，SQL必须遵循数据库引擎的特定语法：
 ```php
@@ -197,7 +197,7 @@ foreach ($robots as $robot) {
 // 获取结果集中的第一条记录
 $robot = $connection->fetchOne($sql);
 ```
-默认情况下，调用这些方法会返回一个数组(关联+索引)。你可以调用`Phalcon\Db\Result::setFetchMode()`方法改变这种行为，该方法接收一个常量值，定义返回结果集的类型：
+默认情况下，调用这些方法会返回一个数组(关联+索引)。可以调用`Phalcon\Db\Result::setFetchMode()`方法改变这种行为，该方法接收一个常量值，定义返回结果集的类型：
 <table>
     <thead>
         <tr>
@@ -208,25 +208,25 @@ $robot = $connection->fetchOne($sql);
     <tbody>
         <tr>
             <td>
-                <code>Phalcon\\Db::FETCH_NUM</code>
+                <code>Phalcon\Db::FETCH_NUM</code>
             </td>
             <td>返回索引数组</td>
         </tr>
         <tr>
             <td>
-                <code>Phalcon\\Db::FETCH_ASSOC</code>
+                <code>Phalcon\Db::FETCH_ASSOC</code>
             </td>
             <td>返回关联数组</td>
         </tr>
         <tr>
             <td>
-                <code>Phalcon\\Db::FETCH_BOTH</code>
+                <code>Phalcon\Db::FETCH_BOTH</code>
             </td>
             <td>返回数组(索引+关联)</td>
         </tr>
         <tr>
             <td>
-                <code>Phalcon\\Db::FETCH_OBJ</code>
+                <code>Phalcon\Db::FETCH_OBJ</code>
             </td>
             <td>返回对象</td>
         </tr>
@@ -264,8 +264,8 @@ $robot = $result->fetch();
 echo $result->numRows();
 ```
 ## 参数绑定(Binding Parameters)
-`Phalcon\Db`支持参数绑定。尽管使用参数绑定会影响性能，但可以防止SQL注入。
-支持字符串和占位符，参数绑定可以简单的实现如下：
+`Phalcon\Db`支持参数绑定。使用参数绑定会影响性能，但可以防止SQL注入。
+支持字符串和数字占位符，参数绑定可以简单的实现如下：
 ```php
 <?php
 
@@ -278,7 +278,7 @@ $result = $connection->query(
     ]
 );
 
-// 指定占位符
+// 字符串占位符
 $sql     = "INSERT INTO `robots`(name, year) VALUES(:name, :year)";
 $success = $connection->query(
     $sql,
@@ -288,8 +288,8 @@ $success = $connection->query(
     ]
 );
 ```
-使用数字占位符时，你需要将它们定义为数字值(如1或2)，'1'或'2'会被视为字符串而非数字，导致占位符不能被成功替换。使用任何数据库适配器，数据都会被`Pdo::Quote()`自动转义。该方法会考虑到连接字符集，因此建议在连接选项或服务器配置中定义正确的字符集，错误的字符集会在存储或检索数据时产生不良影响。
-此外，你也可以将参数直接传递给execute()/query()方法，这种情况下的绑定参数会直接传递给PDO：
+使用数字占位符时，需要将它们定义为数字值(如1或2)，'1'或'2'会被视为字符串而非数字，导致占位符不能被成功替换。使用任何数据库适配器，数据都会被`Pdo::Quote()`自动转义。该方法会考虑到连接字符集，因此建议在连接选项或服务器配置中定义正确的字符集，错误的字符集会在存储或检索数据时产生不良影响。
+此外，可以将参数直接传递给execute() / query()方法，这种情况下的绑定参数会直接传递给PDO：
 ```php
 <?php
 
@@ -303,7 +303,7 @@ $result = $connection->query(
 );
 ```
 ## 特定类型占位符(Typed Placeholders)
-占位符允许你执行参数绑定以避免SQL注入：
+占位符允许执行参数绑定以避免SQL注入：
 ```php
 <?php
 
@@ -333,7 +333,7 @@ $robots = $this->modelsManager->executeQuery(
     Column::BIND_PARAM_INT
 );
 ```
-你可以在参数中使用类型化的占位符，而不用在`executeQuery()`方法中指定：
+可以在参数中使用类型化的占位符，而不用在`executeQuery()`方法中指定：
 ```php
 <?php
 
@@ -353,7 +353,7 @@ $robots = $this->modelsManager->executeQuery(
     ]
 );
 ```
-如果你不需要指定绑定参数类型，你可以省略：
+如果不需要指定绑定参数类型，可以省略：
 ```php
 <?php
 
@@ -453,9 +453,9 @@ $robots = $this->modelsManager->executeQuery(
     </tbody>
 </table>
 
-## 绑定参数类型转换(Catd bound parameters values)
+## 绑定参数类型转换(Cast bound parameters values)
 默认情况下，绑定参数不会在PHP中转换为指定类型，
-如，在`LIMIT/OFFSET`中给占位符传递一个字符串值就会导致错误：
+如，在`LIMIT / OFFSET`中给占位符传递一个字符串值就会导致错误：
 ```php
 <?php
 
@@ -479,14 +479,14 @@ syntax to use near ''100'' at line 1' in /Users/scott/demo.php:78
 <?php
 
 $number = '100';
-$robots = $modelManager->executeQuery(
+$robots = $modelsManager->executeQuery(
     "SELECT * FROM Some\Robots LIMIT {number:int}",
     [
         'number' => (int) $number,
     ]
 );
 ```
-要解决这个问题，需要开发者格外注意绑定参数类型及其如何传递。为了简化操作并避免异常，你可以指定`Phalcon`替你转换：
+要解决这个问题，需要开发者格外注意绑定参数类型及其如何传递。为了简化操作并避免异常，可以指定`Phalcon`自动转换：
 ```php
 <?php
 
@@ -528,13 +528,13 @@ $robots = $modelManager->executeQuery(
     </tbody>
 </table>
 
-从数据库返回的值在PDO中始终表示为字符串，无论该列值是数字还是布尔值。这种情况是因为某些列类型由于其大小限制而无法用PHP原来类型表示。例如，MySQL中的<code>BIGINT</code>可以存储无法用PHP 32位整型表示的大整数。所以，PDO和ORM默认将所有值作为字符串。你可以设置ORM自动将这些值转换为PHP实际类型：
+从数据库返回的值在PDO中始终表示为字符串，无论该列值是数字还是布尔值。这种情况是因为某些列类型由于其大小限制而无法用PHP原来类型表示。例如，MySQL中的<code>BIGINT</code>可以存储无法用PHP 32位整型表示的大整数。所以，PDO和ORM默认将所有值作为字符串。可以设置ORM自动将这些值转换为PHP实际类型：
 ```php
 <?php
 
 \Phalcon\Mvc\Model::setup(['castOnHydrate' => true]);
 ```
-通过这种方式，你可以使用严格运算符或对变量类型进行假设：
+通过这种方式，可以使用严格运算符或对变量类型进行假设：
 ```php
 <?php
 
@@ -543,8 +543,8 @@ if (11 === $robot->id) {
     echo $robot->name;
 }
 ```
-## 插入/更新/删除记录(Inserting/Updading/Deleting Rows)
-你可以使用原生SQL或类方法来插入、更新、删除记录：
+## 插入 / 更新 / 删除记录(Inserting / Updating / Deleting Rows)
+可以使用原生SQL或类方法来插入、更新、删除记录：
 ```php
 <?php
 
@@ -675,7 +675,7 @@ try {
     $connection->rollback();
 }
 ```
-除了标准事务，`Phalcon\Db`内置了嵌套事务(如果数据库支持)。当你再次调用`begin()`方法时，会创建一个嵌套事务：
+除了标准事务，`Phalcon\Db`内置了嵌套事务(如果数据库支持)。当再次调用`begin()`方法时，会创建一个嵌套事务：
 ```php
 <?php
 
@@ -798,7 +798,7 @@ $connection = new Connection(
 // 将eventsManager分配给数据库适配器实例
 $connection->setEventsManager($eventsManager);
 ```
-数据库事件中，停止SQL操作非常有用。例如，你想在SQL执行前实现注入检查：
+数据库事件中，终止SQL操作非常有用。例如，想在SQL执行前实现注入检查：
 ```php
 <?php
 
@@ -811,7 +811,7 @@ $eventsManager->attch(
 
         // 检查SQL中是否有恶意关键字
         if (preg_match('/DROP|ALTER/i', $sql)) {
-            // 不允许DROP/ALTERT操作
+            // 不允许DROP / ALTERT操作
             return false;
         }
 
@@ -866,13 +866,13 @@ echo 'Start Time: ', $profile->getInitialTime(), "\n";
 echo 'Final Time: ', $profile->getFinalTime(), "\n";
 echo 'Total Elapsed Time: ', $profile->getTotalElapsedSeconds(), "\n";
 ```
-你还可以基于`Phalcon\Db\Profiler`创建自己的分析器，以实时统计发送到数据库的SQL语句：
+还可以基于`Phalcon\Db\Profiler`创建自己的分析器，以实时统计发送到数据库的SQL语句：
 ```php
 <?php
 
 use Phalcon\Db\Profiler as Profiler;
 use Phalcon\Db\Profiler\Item as Item;
-use Phalcon\Evnets\Manager as EventsManager;
+use Phalcon\Events\Manager as EventsManager;
 
 class DbProfiler extends Profiler
 {
@@ -943,9 +943,9 @@ $connection->insert(
 (name, price) VALUES ('Hot pepper', 3.50)
 ```
 ## 自定义记录器(Implementing your own Logger)
-你可以自定义记录器以记录数据库操作，通过创建一个实现了`log()`方法的类，该方法接受一个字符串作为第一个参数。你可以将记录器对象传递给`Phalcon\Db::setLogger()`，这样在执行任何SQL语句时将调用`log()`方法进行记录。
-## 获取表/视图详情(Describing Tables/Views)
-`Phalcon\Db`提供了获取表格、视图详情的方法：
+可以自定义记录器以记录数据库操作，通过创建一个实现了`log()`方法的类，该方法接受一个字符串作为第一个参数。可以将记录器对象传递给`Phalcon\Db::setLogger()`，这样在执行任何SQL语句时将调用`log()`方法进行记录。
+## 获取表 / 视图详情(Describing Tables / Views)
+`Phalcon\Db`提供了获取表、视图详情的方法：
 ```php
 <?php
 
@@ -999,7 +999,7 @@ foreach ($references as $reference) {
     </tbody>
 </table>
 
-对于被支持的数据库系统，也实现了获取视图详情的方法：
+对于被支持的数据库系统，同样实现了获取视图详情的方法：
 ```php
 <?php
 
@@ -1009,7 +1009,7 @@ $tables = $connection->listViews('test_db');
 // 视图'robots'是否存在于当前库中
 $exists = $connection->viewExists('robots');
 ```
-## 创建、修改、删除表(Creating/Alerting/Dropping Tables)
+## 创建、修改、删除表(Creating / Alerting / Dropping Tables)
 不同的数据库系统(MySQL，Postgresql等)通过CREATE、ALTER、DROP命令提供了用于创建、修改、删除数据表的功能。SQL语法因数据库而异。`Phalcon\Db`为编辑表提供了统一接口，无需区分不同数据库系统的SQL语法。
 ### 创建表(Creating Tables)
 下面例子展示如何创建表：
@@ -1169,21 +1169,21 @@ $connection->createTable(
             <td>
                 <code>columns</code>
             </td>
-            <td>由<code>Phalcon\\Db\\Column</code>定义的字段组成数组</td>
+            <td>由<code>Phalcon\Db\Column</code>定义的字段组成的数组</td>
             <td>否</td>
         </tr>
         <tr>
             <td>
                 <code>indexes</code>
             </td>
-            <td>由<code>Phalcon\\Db\\Index</code>定义的表索引组成的数组</td>
+            <td>由<code>Phalcon\Db\Index</code>定义的表索引组成的数组</td>
             <td>是</td>
         </tr>
         <tr>
             <td>
                 <code>references</code>
             </td>
-            <td>由<code>Phalcon\\Db\\Reference</code>定义的表引用(外键)组成的数组</td>
+            <td>由<code>Phalcon\Db\Reference</code>定义的表引用(外键)组成的数组</td>
             <td>是</td>
         </tr>
         <tr>
@@ -1197,7 +1197,7 @@ $connection->createTable(
 </table>
 
 ### 编辑表(Alerting Tables)
-随着应用程序越来越庞杂，你可能需要调整数据库，作为重构或添加新功能的一部分。并非所有数据库系统都允许修改列或者新增列，`Phalcon\Db`也受到这些限制：
+随着应用程序越来越庞杂，可能需要调整数据库，作为重构或添加新功能的一部分。并非所有数据库系统都允许修改列或者新增列，`Phalcon\Db`也受到这些限制：
 ```php
 <?php
 
