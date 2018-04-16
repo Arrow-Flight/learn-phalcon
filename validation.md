@@ -266,7 +266,7 @@ class IpValidator extends Validator
 <?php
 
 use Phalcon\Validation;
-use PHalcon\Validation\Validator\Callback;
+use Phalcon\Validation\Validator\Callback;
 use Phalcon\Validation\Validator\PresenceOf;
 
 $validation = new Validation();
@@ -399,7 +399,7 @@ $validation->setFilters('email', 'trim');
 ```
 数据过滤和清理使用的是filter组件，可以使用内置过滤器或向此组件添加更多过滤器。
 ## 验证事件(Validation Events)
-当验证器按类进行组织时，可以实现`beforeValidation()`和`afterValidate()`方法来执行额外的检查、过滤和清理等。如果`beforeValidation()`方法返回`false`，验证将自动取消：
+当验证器按类进行组织时，可以实现`beforeValidation()`和`afterValidation()`方法来执行额外的检查、过滤和清理等。如果`beforeValidation()`方法返回`false`，验证将自动取消：
 ```php
 <?php
 
