@@ -40,7 +40,7 @@
             <td>移除所有字符，[a-zA-Z0-9]除外</td>
         </tr>
         <tr>
-            <td>strigtags</td>
+            <td>striptags</td>
             <td>对该值应用<code>strip_tags</code>函数</td>
         </tr>
         <tr>
