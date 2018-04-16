@@ -5,13 +5,13 @@ Phalcon查询语言，简称PhalconQL或PHQL，是一种面向对象的高级SQL
 
 解析器先检查传递的PHQL语句的语法，然后构建中间语句，最后将其转换为RDBMS对应的SQL语句。
 
-PHQL实现了一系列功能，使你可以更安全的操作数据库。
+PHQL实现了一系列功能，可以更安全的操作数据库。
 
-- 参数绑定是PHQL功能之一，使你的代码更安全
+- 参数绑定是PHQL功能之一，使代码更安全
 - PHQL每次只允许执行一条SQL语句，以防SQL注入
 - PHQL会忽略所有SQL注入中常用的SQL注释
 - PHQL只允许数据操作语句，避免错误的或未经授权的更改、删除数据库和表
-- PHQL实现了高级抽象接口，允许你以模型方式操作表，以类属性方式操作表字段
+- PHQL实现了高级抽象接口，允许以模型方式操作表，以类属性方式操作表字段
 
 ## 使用示例(Usage Example)
 
@@ -157,7 +157,7 @@ $phql = "SELECT c.name FROM Cars AS c WHERE c.brand_id = 21 ORDER BY c.name LIMI
 $query = $manager->createQuery($phql);
 ```
 ### 结果集类型(Result Types)
-结果集类型根据我们查询字段的不同而不同，如果你检索单个完整对象，则返回`Phalcon\Mvc\Model\Resultset\Simple`对象。这种结果集是一组完整的模型对象：
+结果集类型根据我们查询字段的不同而不同，如果检索单个完整对象，则返回`Phalcon\Mvc\Model\Resultset\Simple`对象。这种结果集是一组完整的模型对象：
 ```php
 <?php
 
@@ -197,7 +197,7 @@ foreach ($cars as $car) {
 ```
 我们仅仅查询了表中的某些字段，虽然返回的结果集仍然是`Phalcon\Mvc\Model\Resultset\Simple`对象，但不能当成完整模型对象。该对象的每个成员都是一个包含所查询字段的标准对象。
 
-这些不表示完整对象的值就是我们所说的标量，PHQL允许你查询所有类型的标量：字段，函数，字面两，表达式等：
+这些不表示完整对象的值就是我们所说的标量，PHQL允许查询所有类型的标量：字段，函数，字面两，表达式等：
 ```php
 <?php
 
@@ -241,7 +241,7 @@ foreach ($rows as $row) {
     echo $row->brand_name, "\n";
 }
 ```
-默认使用INNER JOIN，你可以指定JOIN类型：
+默认使用INNER JOIN，可以指定JOIN类型：
 ```php
 <?php
 
@@ -429,7 +429,7 @@ class Cars extends Model
     }
 }
 ```
-如果我们在模型Cars中执行下面的`INSERT`语句，操作将会失败，因为price不符合我们制定的规则。通过检查插入状态，我们可以打印任何内部生成的验证消息：
+如果我们在模型Cars中执行下面的`INSERT`语句，操作将会失败，因为price不满足我们制定的规则。通过检查插入状态，我们可以打印任何内部生成的验证消息：
 ```php
 <?php
 
@@ -504,7 +504,7 @@ $process = function () use (&$messages) {
     foreach ($cars as $car) {
         $car->price = 15000;
 
-        if ($cat->save() === false) {
+        if ($car->save() === false) {
             $messages = $car->getMessages();
 
             return false;
@@ -516,7 +516,7 @@ $process = function () use (&$messages) {
 
 $success = $process();
 ```
-## 删除数据
+## 删除数据(Deleting Data)
 删除记录时，与删除操作相关的事件将逐一执行：
 ```php
 <?php
@@ -627,7 +627,7 @@ $builder->from('Robots')
 
 // "SELECT Robots.* FROM Robots WHERE Robots.type = 'virtual' OR Robots.id > 50";
 $builder->from('Robots')
-    ->where('type  "virtual"')
+    ->where('type = "virtual"')
     ->orWhere('id > 50');
 
 // "SELECT Robots.* FROM Robots GROUP BY Robots.name";
@@ -757,7 +757,7 @@ $result = $manager->executeQuery(
     ]
 );
 ```
-你可以通过以下方式禁用字面量：
+可以通过以下方式禁用字面量：
 ```php
 <?php
 
@@ -767,9 +767,9 @@ Model::setup(
     ['phqlLiterals' => false]
 );
 ```
-无论字面量是否禁用，参数绑定都可以正常使用。禁用只是开发人员能够在web应用中采取的又一项安全策略。
+无论字面量是否禁用，参数绑定都可以正常使用。禁用只是开发人员能够在web应用中采取的一项安全策略。
 ## 转义保留字(Escaping Reserved Words)
-PHQL有一些保留字，如果你想将保留字作为模型名或字段名使用，则需要使用转义分隔符`[`和`]`来转义关键字：
+PHQL有一些保留字，如果想将保留字作为模型名或字段名使用，则需要使用转义分隔符`[`和`]`来转义关键字：
 ```php
 <?php
 
@@ -812,7 +812,7 @@ class Robots extends Model
     }
 }
 ```
-如果原生SQL查询在你的应用中很普遍，可以在模型中添加通用方法：
+如果原生SQL查询在应用中很普遍，可以在模型中添加通用方法：
 ```php
 <?php
 
@@ -855,4 +855,4 @@ PHQL中的一些注意事项：
 - 类名称区分大小写，如果定义类时名称和创建时的名称不一致，在大小写敏感的操作系统(如linux)中将导致不可预知行为
 - 为保证参数绑定成功，连接数据库时必须指定正确的字符集
 - 指定别名的类不能用完整命名空间替换，因为这项操作发生在PHP代码中，而非PHQL语句里
-- 如果字段使用别名，别名应避免和字段名相同，不然查询解析器容易混淆。
+- 如果字段使用别名，应避免别名和字段名相同，不然查询解析器容易混淆。
