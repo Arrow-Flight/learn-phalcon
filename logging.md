@@ -115,6 +115,7 @@ $logger->log(
     ]
 );
 ```
+生成的日志如下：
 ```php
 [Tue, 28 Jul 15 22:09:02 -0500][CRITICAL] This is a critical message
 [Tue, 28 Jul 15 22:09:02 -0500][EMERGENCY] This is an emergency message
@@ -128,7 +129,7 @@ $logger->log(
 [Tue, 28 Jul 15 22:09:02 -0500][DEBUG] This is a message
 [Tue, 28 Jul 15 22:09:02 -0500][DEBUG] This is a parameter
 ```
-还可以使用`setLogLevel()`方法设置日志级别，该方法接收一个常量，只保存级别等于或高于该常量的日志：
+还可以使用`setLogLevel()`方法设置日志级别，该方法接收一个常量，只保存级别不低于该常量的日志：
 ```php
 <?php
 
@@ -143,7 +144,7 @@ $logger->setLogLevel(
 ```
 上例中，只记录critical和emergency级别的日志。默认情况下，记录所有级别日志。
 ## 事务(Transactions)
-将数据记录到文件(文件系统)中会有较高的性能损失，这种情况下可以使用日志事务。事务将日志临时存储在内存中，然后再将数据写入相应的适配器。
+将数据记录到文件(文件系统)中会有较高的性能损失，这种情况下可以使用日志事务。事务将日志临时存储在内存中，然后再写入相应的适配器。
 ```php
 <?php
 
@@ -200,8 +201,8 @@ $logger->error(
     'This is another error'
 );
 ```
-## 消息格式化(Messsage Formatting)
-该组件在小心被发送到后台之前，使用`formatters`格式化消息。可用的`formatters`如下：
+## 格式化消息(Messsage Formatting)
+该组件在消息被发送到后台之前，使用`formatters`格式化消息。可用的`formatters`如下：
 
 <table>
     <thead>
@@ -215,28 +216,145 @@ $logger->error(
             <td>
                 <code>Phalcon\Logger\Formatter\Line</code>
             </td>
-            <td>单行字符串格式化消息</td>
+            <td>单行格式</td>
         </tr>
         <tr>
             <td>
                 <code>Phalcon\Logger\Formatter\FirePHP</code>
             </td>
             <td>
-                格式化消息，以便将消息发送到FirePHP
+                FirePHP格式
             </td>
         </tr>
         <tr>
             <td>
                 <code>Phalcon\Logger\Formatter\Json</code>
             </td>
-            <td>使用JSON格式预处理消息</td>
+            <td>JSON格式</td>
         </tr>
         <tr>
             <td>
                 <code>Phalcon\Logger\Formtter\Syslog</code>
             </td>
-            <td>使用系统格式,格式化消息</td>
+            <td>系统格式</td>
         </tr>
     </tbody>
 </table>
 
+### 单行格式(Line Formatter)
+使用单行字符串格式化消息，默认格式是：
+```
+[%date%][%type%] %message%
+```
+`setFormat()`方法能更改默认格式，可以调用该方法自定义消息格式。支持的格式变量有：
+
+<table>
+    <thead>
+        <tr>
+            <th>格式变量</th>
+            <th>说明</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>%message%</td>
+            <td>消息记录格式</td>
+        </tr>
+        <tr>
+            <td>%date%</td>
+            <td>消息添加日期</td>
+        </tr>
+        <tr>
+            <td>%type%</td>
+            <td>带消息类型的大写字符串</td>
+        </tr>
+    </tbody>
+</table>
+
+以下示例显示如何更改日志格式：
+```php
+<?php
+
+use Phalcon\Logger\Formatter\Line as LineFormatter;
+
+$formatter = new LineFormatter('%date% - %message%');
+
+// 更改日志格式
+$logger->setFormatter($formatter);
+```
+### 自定义格式(Implementing your own formatters)
+扩展已有格式或创建自定义格式，必须实现`Phalcon\Logger\FormatterInterface`接口。
+## 适配器(Adapters)
+以下示例演示每个适配器的基本用法：
+### PHP流日志(Stream Logger)
+流日志将消息写入已注册的有效PHP流中。
+```php
+<?php
+
+use Phalcon\Logger\Adapter\Stream as StreamAdapter;
+
+// 使用zlib压缩开启流
+$logger = new StreamAdapter('compress.zlib://week.log.gz');
+
+// 将日志写入stderr
+$logger = new StreamAdapter('php://stderr');
+```
+### 文本日志(File Logger)
+使用文件记录日志，默认所有日志文件都使用追加模式打开，将文件指针放在文件末尾，仅用于写入。如果文件不存在，则尝试创建它。可以向构造函数传递附加参数更改此模式：
+```php
+<?php
+
+use Phalcon\Logger\Adapter\File as FileAdapter;
+
+// 以写模式创建文件
+$logger = new FileAdapter(
+    'app/logs/test.log',
+    [
+        'mode' => 'w',
+    ]
+);
+```
+### 系统日志(Syslog Logger)
+将消息发送给系统日志，系统行为因操作系统而异。
+```php
+<?php
+
+use Phalcon\Logger\Adapter\Syslog as SyslogAdapter;
+
+// 基础用法
+$logger = new SyslogAdapter(null);
+
+// 配置标识、模式、设备
+$logger = new SyslogAdapter(
+    'ident-name',
+    [
+        'option'   => LOG_NDELAY,
+        'facility' => LOG_MAIL,
+    ]
+);
+```
+### FirePHP日志(FirePHP Logger)
+以FirePHP(Firefox的Firebug扩展)中显示的HTTP响应头格式发送消息。
+```php
+<?php
+
+use Phalcon\Logger;
+use Phalcon\Logger\Adapter\Firephp as Firephp;
+
+$logger = new Firephp();
+
+$logger->log(
+    'This is a message'
+);
+
+$Logger->log(
+    'This is an error',
+    Logger::ERROR
+);
+
+$logger->error(
+    'This is another error'
+);
+```
+### 自定义适配器(Implementing your own adapters)
+扩展已有适配器或创建自定义适配器，必须实现`Phalcon\Logger\AdapterInterface`接口。
