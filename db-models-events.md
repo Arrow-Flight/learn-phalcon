@@ -212,7 +212,7 @@ class Robots extends Model
         );
 
         // 为事件添加事件管理器
-        $this->setEventsManager($eventManager);
+        $this->setEventsManager($eventsManager);
     }
 }
 ```

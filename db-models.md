@@ -1881,7 +1881,7 @@ Model::setup(
 <?php
 
 use Phalcon\Di;
-use Phalcon\Mvc\Db\Adapter\Pdo\Sqlite as Connection;
+use Phalcon\Db\Adapter\Pdo\Sqlite as Connection;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\Model\Manager as ModelsManager;
 use Phalcon\Mvc\Model\Metadata\Memory as MetaData;

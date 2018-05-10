@@ -849,7 +849,7 @@ $route->beforeMatch(
         // 检查是否Ajax请求
         return $request->isAjax();
     }
-)
+);
 ```
 ## 主机名限制(Hostname Constraints)
 路由中可以设置主机名限制，只有当主机名符合条件时，才进行路由匹配：
@@ -1205,8 +1205,7 @@ $di['router'] = function () {
 $di->set(
     'router',
     function () {
-        require __DIR__ . '/../app/config/routes.php';
-
+        $router = require(__DIR__ . '/../app/config/routes.php');
         return $router;
     }
 );

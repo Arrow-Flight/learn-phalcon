@@ -122,7 +122,7 @@ use Phalcon\Config\Adapter\Ini as ConfigIni;
 
 $config = new ConfigIni('path/config.ini');
 
-echo $config->phalcon\controllersDir, "\n";
+echo $config->phalcon->controllersDir, "\n";
 echo $config->database->username, "\n";
 echo $config->models->metadata->adapter, "\n";
 ```

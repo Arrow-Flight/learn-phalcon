@@ -833,7 +833,7 @@ class Robots extends Model
         return new Resultset(
             null,
             $robot,
-            $robot->getReadConnection()->query($sql),
+            $robot->getReadConnection()->query($sql)
         );
     }
 }

@@ -817,7 +817,7 @@ $eventsManager->attch(
 
         return true;
     }
-)
+);
 ```
 ## 分析SQL语句(Profiling SQL Statements)
 `Phalcon\Db`内置了性能分析组件`Phalcon\Db\Profiler`，用于分析数据库性能，以便诊断问题，发现瓶颈。使用`Phalcon\Db\Profiler`进行数据库分析相当容易：
