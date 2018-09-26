@@ -36,8 +36,8 @@ $options = [
 
 $config = Factory::load($options);
 ```
-## 本地数组(Native Arrays)
-将本地数组转换成`Phalcon\Config`对象，该方法性能最佳，因为在请求期间不需要读取文件。
+## 原生数组(Native Arrays)
+将原生数组转换成`Phalcon\Config`对象，该方法性能最佳，因为在请求期间不需要读取文件。
 ```php
 <?php
 
